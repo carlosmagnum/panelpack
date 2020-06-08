@@ -4,6 +4,7 @@
     "type": "project",
     "license": "MIT",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "barryvdh/laravel-dompdf": "^0.8.2",
         "bumbummen99/shoppingcart": "^2.8.0",
