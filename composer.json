@@ -7,13 +7,13 @@
     "require": {
         "barryvdh/laravel-dompdf": "^0.8.2",
         "bumbummen99/shoppingcart": "^2.8.0",
+        "intervention/imagecache": "^2.4",
         "laravel/framework": "5.8.*",
         "laravel/socialite": "^4.1",
         "laravelcollective/html": "^5.8",
         "unisharp/laravel-ckeditor": "^4.7",
         "unisharp/laravel-filemanager": "~1.9",
-        "watson/sitemap": "^2.0",
-        "intervention/imagecache": "^2.4"
+        "watson/sitemap": "^2.0"
     },
     "autoload": {
         "psr-4": {
