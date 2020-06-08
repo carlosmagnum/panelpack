@@ -19,7 +19,7 @@ class CreateSysCoreSetupsTable extends Migration
             $table->string('name',100);
             $table->string('model',200);
             $table->string('table_name',50);
-            $table->text('settings');
+            $table->json('settings');
             $table->integer('order');
             $table->tinyInteger('visible');
             $table->timestamps();
