@@ -13,7 +13,7 @@
         "unisharp/laravel-ckeditor": "^4.7",
         "unisharp/laravel-filemanager": "~1.9",
         "watson/sitemap": "^2.0",
-        "intervention/imagecache": "^2.3"
+        "intervention/imagecache": "^2.4"
     },
     "autoload": {
         "psr-4": {
