@@ -9,7 +9,7 @@
         "barryvdh/laravel-dompdf": "^0.8.2",
         "bumbummen99/shoppingcart": "^2.8.0",
         "intervention/imagecache": "^2.4",
-        "laravel/framework": "^7.0",
+        "laravel/framework": "v7.14.1",
         "laravel/socialite": "^4.1",
         "laravelcollective/html": "^5.8",
         "unisharp/laravel-ckeditor": "^4.7",
