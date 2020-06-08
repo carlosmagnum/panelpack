@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class SysCoreSetup extends Model
 {
     protected $table = 'sys_core_setups';
+    protected $casts = [
+        'settings' => 'array'
+    ];
 
     /**
      * @param       $query
