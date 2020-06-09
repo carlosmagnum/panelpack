@@ -29,7 +29,6 @@
                 "UniSharp\\LaravelFilemanager\\LaravelFilemanagerServiceProvider",
                 "Intervention\\Image\\ImageServiceProvider",
                 "Gloudemans\\Shoppingcart\\ShoppingcartServiceProvider",
-                "Unisharp\\Ckeditor\\ServiceProvider",
                 "Decoweb\\Panelpack\\PanelPackProvider",
                 "Decoweb\\Panelpack\\Providers\\ShopServiceProvider",
                 "Decoweb\\Panelpack\\Providers\\PicturesServiceProvider",
