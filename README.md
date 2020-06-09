@@ -8,6 +8,8 @@ Install the package through [Composer](http://getcomposer.org/).
 
     composer require decoweb/panelpack:"dev-version/5-6"
 
+It works well for laravel 5.8.*
+
 Add the following providers to **config/app.php** :
 ```
 Collective\Html\HtmlServiceProvider::class,
