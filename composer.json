@@ -24,7 +24,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Barryvdh\\DomPDF\\ServiceProvider"
+                "Barryvdh\\DomPDF\\ServiceProvider",
                 "Collective\\Html\\HtmlServiceProvider",
                 "UniSharp\\LaravelFilemanager\\LaravelFilemanagerServiceProvider",
                 "Intervention\\Image\\ImageServiceProvider",
