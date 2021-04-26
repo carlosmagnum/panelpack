@@ -6,7 +6,7 @@ Admin panel for Laravel
 
 Install the package through [Composer](http://getcomposer.org/). 
 
-    composer require decoweb/panelpack:"dev-seven"
+    composer require decoweb/panelpack:"dev-dev-seven"
 
 Work in progress for Laravel 7
 

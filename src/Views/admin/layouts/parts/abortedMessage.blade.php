@@ -1,5 +1,4 @@
-<div class="alert alert-warning alert-dismissible fade in" role="alert">
+<div class="alert alert-warning alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
-    </button>
-    {{ session()->get('aborted') }}
+    </button><strong>{{ session()->get('aborted') }}</strong>
 </div>

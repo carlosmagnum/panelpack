@@ -3,39 +3,19 @@ namespace Decoweb\Panelpack\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Decoweb\Panelpack\Models\SysCoreSetup as Table;
 use Decoweb\Panelpack\Models\File;
 use Illuminate\Support\Facades\Storage;
+use Decoweb\Panelpack\Helpers\Traits\Core;
 class FilesController extends Controller
 {
+    use Core;
+
     public function __construct()
     {
         $this->middleware('web');
         $this->middleware('auth');
     }
 
-    /**
-     * Returns table info(collection) form SysCoreSetup or FALSE if table not found
-     *
-     * @param $tabela
-     * @return bool
-     */
-    private function tableGet($tabela)
-    {
-        $tabela = (string)trim($tabela);
-
-        if( !ctype_alpha($tabela)){
-            return false;
-        }
-
-        $table = Table::where('table_name', $tabela)->first();
-
-        if (null == $table){
-            return false;
-        }
-
-        return $table;
-    }
 
     /**
      * Displays a page for adding a new file for a specified table record
@@ -47,13 +27,14 @@ class FilesController extends Controller
     public function create($tabela, $recordId)
     {
         $recordId = (int)$recordId;
-        $table = $this->tableGet($tabela);
+        $table = $this->getTableData($tabela);
 
         if( $table === false || $recordId == 0){
+            request()->session()->flash('mesaj','Acesta tabela nu exista.');
             return redirect()->back();
         }
 
-        $settings = unserialize($table->settings);
+        $settings = $this->getSettings($tabela);
         if((int)$settings['config']['functionFile'] != 1){
             return redirect()->back();
         }
@@ -62,7 +43,6 @@ class FilesController extends Controller
         $model = '\App\\'.$modelName;
         $record = $model::find($recordId);
 
-        //dd($record);
         if(null == $record){
             return redirect()->back();
         }
@@ -92,15 +72,19 @@ class FilesController extends Controller
      * @param $tabela
      * @param $recordId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request, $tabela, $recordId)
     {
         $this->validate($request,[
-            'title'   => 'required|max:100',
-            'file'           => 'required|file|mimetypes:application/pdf',
+            'title' => 'required|max:100',
+            'file'  => 'required|file|mimetypes:application/pdf',
+        ],[
+            'title.required'    => 'Fisierul trebuie sa aiba un nume.',
+            'file.mimetypes'    => 'Formatul fisierului nu este adecvat',
         ]);
 
-        $table = $this->tableGet($tabela);
+        $table = $this->getTableData($tabela);
         # Check 1 - if table exists
         if($table === false){
             $request->session()->flash('mesaj','Acesta tabela nu exista.');
@@ -118,7 +102,7 @@ class FilesController extends Controller
         }
 
         # Check 3 - if record accepts files, and how many($filesMax)
-        $settings = unserialize($table->settings);
+        $settings = $this->getSettings($tabela);
         if((int)$settings['config']['functionFile'] != 1){
             $request->session()->flash('mesaj','Acesta inregistrare nu accepta fisiere.');
             return redirect('admin/core/'.$tabela.'/addFile/'.$recordId);
@@ -129,7 +113,6 @@ class FilesController extends Controller
         //Check 4 - compare number of files in Files for the record with $filesMax
         $ordine = File::where('table_id', $table->id)->where('record_id',$recordId)->max('ordine');
         $filesNumber = File::where('table_id', $table->id)->where('record_id',$recordId)->count();
-
 
         if($filesMax == (int)$filesNumber){
             $request->session()->flash('mesaj',"Numarul maxim de fisiere a fost deja atins ($filesNumber).");
@@ -149,34 +132,27 @@ class FilesController extends Controller
         $file->save();
 
         // Store file on disk
-        $disk = ( config('app.env') == 'production' )?'files_p':'files';
-        Storage::disk($disk)->putFileAs('files', $request->file('file'), $fileName);
+//      $disk = ( config('app.env') == 'production' )?'files':'files_dev';
+        $path = trim(strtolower($settings['config']['tableName']))."/$recordId/";
+        Storage::disk('fisiere')->putFileAs($path, $request->file('file'), $fileName);
         $request->session()->flash('mesaj','Fisierul a fost adugat cu succes!');
         return redirect('admin/core/'.$tabela.'/addFile/'.$recordId);
     }
 
+
     /**
-     * Deletes a file
+     * Deletes a file name from "files" table.
+     * This action is observed by FileObserver
+     * which deletes the psysical file from storage.
      *
-     * @param $fileId
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @param File $file
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
-    public function delete(Request $request, $fileId)
+    public function delete(File $file)
     {
-        $fileId = (int)trim($fileId);
-        $file = File::find($fileId);
-
-        if(null == $file){
-            return redirect()->back();
-        }
-
-        $tableName = $file->table->table_name;
-        $recordId = $file->record_id;
-
-        Storage::disk('files')->delete('files/'.$file->name);
         $file->delete();
-
-        return redirect('admin/core/'.$tableName.'/addFile/'.$recordId)->with('mesaj','Fisierul a fost sters.');
+        return redirect()->back()->with('mesaj','Fisierul a fost sters!');
     }
 
     /**
@@ -186,6 +162,7 @@ class FilesController extends Controller
      * @param $tableId
      * @param $recordId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, $tableId, $recordId)
     {

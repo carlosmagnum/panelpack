@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class RecordsController extends Controller
 {
@@ -298,7 +299,7 @@ class RecordsController extends Controller
             }
             # Storing the record's slug
             if($column === $fields['config']['displayedName']){
-                $newRecord->slug = str_slug($request->$column);
+                $newRecord->slug = Str::slug($request->$column);
             }
 
         }

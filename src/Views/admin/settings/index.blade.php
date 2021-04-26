@@ -1,61 +1,66 @@
 @extends('vendor.decoweb.admin.layouts.master')
 @section('section-title') Setari generale @endsection
 @section('section-content')
-    {!! Form::open(['method'=>'POST','url'=>'admin/settings/update','class'=>'form-horizontal']) !!}
-    <div class="form-group">
-        {!! Form::label('analytics','Google analytics:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::textarea('analytics', $site_settings['analytics'], ['class'=>'form-control', 'id'=>'analytics','placeholder'=>'']) !!}
+
+<form action="{{ route('settings.update') }}" method="post" class="form-horizontal form-label-left">
+        @csrf
+        @method('POST')
+    <div class="item form-group">
+        <label for="analytics" class="col-form-label col-md-3 col-sm-3 label-align">Google analytics:</label>
+        <div class="col-md-6 col-sm-6">
+            <textarea name="analytics" id="analytics" cols="50" rows="10" class="form-control" placeholder="Google analytics code...">{{ $site_settings['analytics'] }}</textarea>
         </div>
     </div>
     <h4>Setari Site</h4>
     <hr>
-    <div class="form-group">
-        {!! Form::label('city','Oras companie:',['class'=>'col-md-2 control-label']) !!}
-        <div class="col-md-5">
-            {!! Form::text('city', $site_settings['city'], ['class'=>'form-control', 'id'=>'city','placeholder'=>'']) !!}
+    <div class="item form-group">
+        <label for="city" class="col-form-label col-md-3 col-sm-3 label-align">Oras companie:</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="text" name="city" id="city" value="{{ $site_settings['city'] }}" class="form-control">
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('system_email','Email de sistem:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::text('system_email', $site_settings['system_email'], ['class'=>'form-control', 'id'=>'system_email','placeholder'=>'']) !!}
+    <div class="item form-group">
+        <label for="system_email" class="col-form-label col-md-3 col-sm-3 label-align">Email de sistem:</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="text" name="system_email" id="system_email" value="{{ $site_settings['system_email'] }}" class="form-control" readonly>
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('contact_email','Email de contact:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::text('contact_email', $site_settings['contact_email'], ['class'=>'form-control', 'id'=>'contact_email','placeholder'=>'']) !!}
+    <div class="item form-group">
+        <label for="contact_email" class="col-form-label col-md-3 col-sm-3 label-align">Email de contact:</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="text" name="contact_email" id="contact_email" value="{{ $site_settings['contact_email'] }}" class="form-control">
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('phone','Telefon:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::text('phone', $site_settings['phone'], ['class'=>'form-control', 'id'=>'phone','placeholder'=>'']) !!}
+    <div class="item form-group">
+        <label for="phone" class="col-form-label col-md-3 col-sm-3 label-align">Telefon:</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="text" name="phone" id="phone" value="{{ $site_settings['phone'] }}" class="form-control">
         </div>
     </div>
     <h4>Setari SEO</h4>
     <hr>
-    <div class="form-group">
-        {!! Form::label('site_name','Numele site-ului:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::text('site_name', $site_settings['site_name'], ['class'=>'form-control', 'id'=>'site_name','placeholder'=>'']) !!}
+    <div class="item form-group">
+        <label for="site_name" class="col-form-label col-md-3 col-sm-3 label-align">Numele site-ului:</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="text" name="site_name" id="site_name" value="{{ $site_settings['site_name'] }}" class="form-control">
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('meta_keywords','Cuvinte cheie:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::text('meta_keywords', $site_settings['meta_keywords'], ['class'=>'form-control', 'id'=>'meta_keywords','placeholder'=>'10-12 cuvinte, separate prin virgula']) !!}
+    <div class="item form-group">
+        <label for="meta_keywords" class="col-form-label col-md-3 col-sm-3 label-align">Cuvinte cheie:</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="text" name="meta_keywords" id="meta_keywords" value="{{ $site_settings['meta_keywords'] }}" class="form-control" placeholder="10-12 cuvinte, separate prin virgula">
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('meta_description','Meta descriere:',['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-5">
-            {!! Form::textarea('meta_description', $site_settings['meta_description'], ['class'=>'form-control', 'id'=>'meta_description','placeholder'=>'Descriere site - max 180 de caractere...']) !!}
+    <div class="item form-group">
+        <label for="meta_description" class="col-form-label col-md-3 col-sm-3 label-align">Meta descriere:</label>
+        <div class="col-md-6 col-sm-6">
+            <textarea name="meta_description" id="meta_description" cols="50" rows="10" class="form-control" placeholder="Descriere site - max 180 de caractere...">{{ $site_settings['meta_description'] }}</textarea>
         </div>
     </div>
-    <div class="col-sm-10 col-sm-offset-2">
-        {!! Form::submit('Submit',['class' => 'btn btn-success']) !!}
+    <div class="item form-group">
+    <div class="col-md-6 col-sm-6 offset-md-3">
+        <input type="submit" value="Salvează" class="btn btn-success">
     </div>
-    {!! Form::close() !!}
+    </div>
+</form>
 @endsection

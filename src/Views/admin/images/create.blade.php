@@ -3,29 +3,31 @@
     <a href="{{ url('admin/core/'.$tabela) }}">{{ $pageName }}</a> / {{ $record->$name }}
 @endsection
 @section('section-content')
-
-    {!! Form::open(['method'=>'POST','files'=>true, 'route'=>['store.pic', $tabela, $record->id ],'class'=>'form-horizontal']) !!}
-    <div class="form-group">
-        {!! Form::label('description','Titlu poza:',['class'=>'col-sm-2 control-label']) !!}
+<form action="{{ route('store.pic', [$tabela, $record->id]) }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
+        @csrf
+        @method('POST')
+    <div class="form-group"><label for="description" class="col-sm-2 control-label">Titlu poza: </label>
         <div class="col-sm-5">
-            {!! Form::textarea('description', null, ['class'=>'form-control textarea-small', 'id'=>'description','placeholder'=>'(maxim 50 de caractere)']) !!}
+            <textarea name="description" id="description" class="form-control textarea-small" placeholder="(maxim 50 de caractere)"></textarea>
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('pic', 'Alege o poza:', ['class'=>'col-sm-2 control-label']) !!}
+    <div class="form-group"><label for="pic" class="col-sm-2 control-label">Alege o poza:</label>
         <div class="col-sm-5">
-            {!! Form::file('pic',['class'=>'form-control']) !!}
+            <input type="file" name="pic" class="form-control">
         </div>
     </div>
     <div class="col-sm-10 col-sm-offset-2">
-        {!! Form::submit('Adauga poza',['class' => 'btn btn-primary btn-sm']) !!}
+        <input type="submit" class="btn btn-primary btn-sm" value="Adauga poza">
         <a class="btn btn-default btn-sm" href="{{ url('admin/core/'.$tabela) }}">Renunta</a>
         <button class="btn btn-default btn-sm" type="reset" value="Reset">Reset</button>
     </div>
-    {!! Form::close() !!}
+</form>
+
     <span style="display: block; height: 40px;"></span>
     @if($poze->count() != 0)
-    {!! Form::open(['method'=>'POST','route'=>['update.picsOrder', $idTabela, $record->id],'class'=>'form-horizontal']) !!}
+    <form action="{{ route('update.picsOrder', [$idTabela, $record->id]) }}" method="post" class="form-horizontal">
+        @csrf
+        @method('POST')
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -40,13 +42,13 @@
     @foreach($poze as $poza)
         <tr>
             <td style="width: 136px;">
-                <img src="{{ url('images/small/thumb_'.$poza->name) }}" alt="{{ str_limit($poza->description, 50) }}" title="{{ str_limit($poza->description, 50) }}" data-toggle="tooltip" data-placement="right">
+                <img src="{{ url('images/small/'.$tabela.'/'.$record->id.'/'.'thumb_'.$poza->name) }}" alt="{{ Str::limit($poza->description, 50) }}" title="{{ Str::limit($poza->description, 50) }}" data-toggle="tooltip" data-placement="right">
             </td>
             <td>
-                {!! Form::textarea('description_'.$poza->id, $poza->description, ['class'=>'form-control textarea-small']) !!}
+                <textarea name="description_{{ $poza->id }}" cols="50" rows="10" class="form-control textarea-small">{{ $poza->description }}</textarea>
             </td>
             <td class="text-center">
-                {!! Form::text('ordine_'.$poza->id, $poza->ordine, ['class'=>'numar margin-top-34']) !!}
+                <input type="text" name="ordine_{{ $poza->id }}" value="{{ $poza->ordine }}" class="numar margin-top-34">
             </td>
             <td class='text-center'>
                 <a data-toggle="tooltip" style="margin-top: 35px;" data-placement="top" href="{{ url('admin/core/deletePic/'.$poza->id) }}" class="panelIcon deleteItem" title='Sterge' onclick="return confirm('Sunteti sigur ca doriti sa stergeti?')"></a>
@@ -57,9 +59,9 @@
     </table>
 </div>
     <div class="col-sm-12">
-        {!! Form::submit('Modifica',['class' => 'btn btn-success btn-sm']) !!}
+        <input type="submit" value="Modifica" class="btn btn-success btn-sm">
     </div>
-    {!! Form::close() !!}
+    </form>
     @else
         {{ $noImages }}
     @endif

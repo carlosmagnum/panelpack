@@ -4,13 +4,13 @@ namespace Decoweb\Panelpack\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Decoweb\Panelpack\Models\SysCoreSetup as Table;
 use Decoweb\Panelpack\Models\Image as Poza;
 use Image;
 use Illuminate\Support\Facades\Storage;
-
+use Decoweb\Panelpack\Helpers\Traits\Core;
 class ImagesController extends Controller
 {
+    use Core;
 
     public function __construct()
     {
@@ -28,13 +28,13 @@ class ImagesController extends Controller
     public function create($tabela, $recordId)
     {
         $recordId = (int)$recordId;
-        $table = Table::table($tabela);
+        $table = $this->getTableData($tabela);
 
         if( $table === false || $recordId == 0){
             return redirect()->back();
         }
 
-        $settings = unserialize($table->settings);
+        $settings = $this->getSettings($tabela);
         if((int)$settings['config']['functionImages'] != 1){
             return redirect()->back();
         }
@@ -50,19 +50,16 @@ class ImagesController extends Controller
         $poze = Poza::where('table_id', $table->id)
             ->where('record_id',$recordId)->orderBy('ordine','asc')->get();
 
-        $imagesMax = (int)$settings['config']['imagesMax'];
-        $name = $settings['config']['displayedName'];
-        $pageName =  $settings['config']['pageName'];
-        $noPics = $settings['messages']['no_images'];
+
         return view('decoweb::admin.images.create',[
-            'imagesMax' => $imagesMax,
+            'imagesMax' => (int)$settings['config']['imagesMax'],
             'record'    => $record,
-            'name'      => $name,
+            'name'      => $settings['config']['displayedName'],
             'tabela'    => $tabela,
             'idTabela'  => $table->id,
-            'pageName'  => $pageName,
+            'pageName'  => $settings['config']['pageName'],
             'poze'      => $poze,
-            'noImages'  => $noPics,
+            'noImages'  => $settings['messages']['no_images'],
         ]);
     }
 
@@ -81,7 +78,7 @@ class ImagesController extends Controller
             'pic'           => 'required|image'
         ]);
 
-        $table = Table::table($tabela);
+        $table = $this->getTableData($tabela);
         # Check 1 - if table exists
         if($table === false){
             $request->session()->flash('mesaj','Acesta tabela nu exista.');
@@ -99,7 +96,7 @@ class ImagesController extends Controller
         }
 
         # Check 3 - if record accepts images, and how many($imagesMax)
-        $settings = unserialize($table->settings);
+        $settings = $this->getSettings($tabela);
         if((int)$settings['config']['functionImages'] != 1){
             $request->session()->flash('mesaj','Acesta inregistrare nu accepta imagini.');
             return redirect('admin/core/'.$tabela.'/addPic/'.$recordId);
@@ -130,16 +127,16 @@ class ImagesController extends Controller
         $pic->save();
 
         // Store file on disk
-        $this->resizeAndStore($request->file('pic'),$picName,$table->table_name);
+        $this->resizeAndStore($request->file('pic'), $picName, $settings, $recordId);
 
         $request->session()->flash('mesaj','Poza a fost adugata.');
         return redirect('admin/core/'.$tabela.'/addPic/'.$recordId);
     }
 
-    private function resizeAndStore( $pic, $picName, $tableName )
+    private function resizeAndStore( $pic, $picName, $settings, $record_id )
     {
-        list($width, $height, $compression) = config('imagesize.'.$tableName);
-        
+        list($width, $height, $compression) = config('imagesize.'.$settings['config']['tableName']);
+
         $img = Image::make($pic);
         if( !is_null($width) ){
             $img->fit($width, $height, function ($constraint) {
@@ -150,10 +147,17 @@ class ImagesController extends Controller
                 $constraint->aspectRatio();
             });
         }
-        $img->save(storage_path('app/uploads/'.$picName), $compression);
+
+        $path = trim(strtolower($settings['config']['tableName']))."/$record_id/";
+
+        if( !Storage::directories('uploads/'.$path) ){
+            Storage::makeDirectory('uploads/'.$path);
+        }
+
+        $img->save(storage_path('app/uploads/'.$path.$picName), $compression);
         $img->resize(null,90,function ($constraint) {
             $constraint->aspectRatio();
-        })->save(storage_path('app/uploads/thumb_'.$picName), 75);
+        })->save(storage_path('app/uploads/'.$path.'thumb_'.$picName), 90);
     }
 
     /**
@@ -173,9 +177,6 @@ class ImagesController extends Controller
 
         $tableName = $pic->table->table_name;
         $recordId = $pic->record_id;
-
-        Storage::disk('uploads')->delete($pic->name);
-        Storage::disk('uploads')->delete('thumb_'.$pic->name);
         $pic->delete();
 
         return redirect('admin/core/'.$tableName.'/addPic/'.$recordId);

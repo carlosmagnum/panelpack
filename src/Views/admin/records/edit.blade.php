@@ -1,79 +1,85 @@
 @extends('vendor.decoweb.admin.layouts.master')
-@section('section-title')
-    {{ $fields['config']['pageName'] }}
-@endsection
+@section('section-title') {{ $fields['config']['pageName'] }} @endsection
 @section('section-content')
-    {!! Form::model($record, [
-            'route' => ['record.update', $fields['config']['tableName'] ,$record->id],
-            'method' => 'put',
-            'class'=>'form-horizontal'
-            ])
-    !!}
+<form action="{{ route('record.update',[$fields['config']['tableName'], $record->id]) }}" method="POST" class="form-horizontal form-label-left">
+@csrf @method('PUT')
 <fieldset>
-    <legend>{{ $fields['messages']['edit'] }}</legend>
-    @foreach($fields['elements'] as $name=>$field)
-        <?php
-            $required = ( $field['required'] == '')?'':"*";
-            $id = $name;
-            $type = $field['type'];
-            $default = null;
-            if($field['type'] == 'editor'){
-                if(!defined('EDITOR')){
-                    define('EDITOR',true);
-                }
-                $type = 'textarea';
-                $id = "my-editor";
-            }
+<legend>{{ $fields['messages']['edit'] }}</legend>
+@foreach($fields['elements'] as $name=>$field)
+<?php $required = ( $field['required'] == '')?'':"*" ?>
 
-            if($field['type'] == 'checkbox'){
-                $colType = explode('|',$field['colType']);
-                $value = ($colType[0] == 'enum')?'da':1;
-                $checked = ($record->$name == $value)? true : false ;
-            }
-        ?>
-
-        @if($field['type'] == 'checkbox')
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
+    @switch($field['type'])
+        @case('checkbox')
+            <div class="item form-group">
+                <label class="col-form-label col-md-3 col-sm-3 label-align"></label>
+                <div class="col-md-6 col-sm-6">
                     <div class="checkbox">
                         <label>
-            {!!  Form::checkbox($name, null, $checked).' '.$field['friendlyName'].' '.$required  !!}
+                            @php $checked = ($record->$name === 'da' )?"checked=checked":''; @endphp
+                            <input type="checkbox" name="{{$name}}" {{ $checked }}> {{ $field['friendlyName'] }}
                         </label>
                     </div>
                 </div>
             </div>
-        @elseif($field['type'] == 'select')
-                <div class="form-group">
-                    {!! Form::label('',$field['friendlyName'].' '.$required,['class'=>'col-sm-2 control-label']) !!}
-                    <div class="col-sm-5">
-                        {!! Form::select($name,$field['options'] ,null,['class'=>'form-control']) !!}
-                    </div>
-                </div>
-        @else
-            <div class="form-group">
-                {{ Form::label($id, $field['friendlyName'].' '.$required,['class'=>'col-sm-2 control-label']) }}
-                <div class="col-sm-10">
-                    {{ Form::$type($name, $default, ['class'=>'form-control', 'id'=>"$id",'placeholder'=>'']) }}
+            @break
+        @case('select')
+            <div class="item form-group">
+                <label for="{{ $name }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+                <div class="col-md-6 col-sm-6">
+                    <select name="{{ $name }}" id="{{ $name }}" class="form-control">
+                        @foreach($field['options'] as $optionId => $option)
+                            @php $selected = ($optionId == $record->$name)?'selected':''; @endphp
+                            <option value="{{ $optionId }}" {{ $selected }}>{!! $option !!}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
-        @endif
-    @endforeach
+            @break
+        @case('editor')
+            <?php if( !defined('EDITOR') ) define('EDITOR',true) ?>
+            <div class="item form-group">
+                <label for="my-editor" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+                <div class="col-md-6 col-sm-6">
+                    <textarea name="{{ $name }}" id="my-editor" class="form-control">{{ $record->$name }}</textarea>
+                </div>
+            </div>
+            @break
+        @case('textarea')
+        <div class="item form-group">
+            <label for="{{ $name }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+            <div class="col-md-6 col-sm-6">
+                <textarea name="{{ $name }}" id="{{ $name }}" class="form-control">{{ $record->$name }}</textarea>
+            </div>
+        </div>
+            @break
+        @default
+        <div class="item form-group">
+            <label for="{{ $name }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+            <div class="col-md-6 col-sm-6">
+                <input type="text" name="{{ $name }}" class="form-control" id="{{ $name }}" value="{{ $record->$name }}">
+            </div>
+        </div>
+    @endswitch
+@endforeach
     @if($fields['config']['functionVisible'] == 1)
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+        <div class="item form-group">
+            <label class="col-form-label col-md-3 col-sm-3 label-align"></label>
+            <div class="col-md-6 col-sm-6">
                 <div class="checkbox">
                     <label>
-                        <?php $checked = ($record->visible == 1)? true : false ; ?>
-                        {!!  Form::checkbox('visible', null, $checked).' '.'Vizibil' !!}
+                        <?php $checked = ($record->visible == 1)?'checked=checked':'' ?>
+                            <input type="checkbox" name="visible" {{ $checked }}> Vizibil
                     </label>
                 </div>
             </div>
         </div>
     @endif
-    <div class="col-sm-10 col-sm-offset-2">
-        {!! Form::submit('Submit',['class' => 'btn btn-success btn-sm']) !!}
+    <div class="ln_solid"></div>
+    <div class="item form-group">
+        <div class="col-md-6 col-sm-6 offset-md-3">
+            <input type="submit" value="Salveaza modificari" class="btn btn-primary">
+        </div>
     </div>
 </fieldset>
-    {!! Form::close() !!}
-
+</form>
 @endsection

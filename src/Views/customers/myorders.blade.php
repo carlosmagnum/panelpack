@@ -21,7 +21,7 @@
                 <tr>
                     <td>#{{$order->id}}</td>
                     <td>{{ date_format($order->created_at,'d-M-Y H:i') }}</td>
-                    <td>{{ $order->finalPrice().' '.config('settings.magazin.currency') }}</td>
+                    <td>{{ $order->finalPrice().' '.config('shop.currency') }}</td>
                     <td>{{ $order->status->name }}</td>
                 </tr>
             @endforeach

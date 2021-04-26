@@ -1,36 +1,32 @@
+<?php const NOERRORS = 1; ?>
 @extends('vendor.decoweb.admin.layouts.master')
 @section('section-title') Profil @endsection
 @section('section-content')
 
-    @if(session()->has('mesaj'))
-        <br>
-        <br>
-        <div class="alert alert-success text-center" role="alert">
-            {{ session()->get('mesaj') }}
-        </div>
-    @endif
-
-    {!! Form::open(['method'=>'PUT','route'=>['update.password', $user->id],'class'=>'form-horizontal']) !!}
-    {{--<div class="form-group">
-        {!! Form::label('email','Email',['class'=>'col-sm-3 control-label']) !!}
-        <div class="col-sm-4">
-            {!! Form::email('email', null, ['class'=>'form-control', 'id'=>'email','placeholder'=>'']) !!}
-        </div>
-    </div>--}}
-    <div class="form-group">
-        {!! Form::label('password','Parola noua *',['class'=>'col-sm-3 control-label']) !!}
-        <div class="col-sm-4">
-            {!! Form::password('password', ['class'=>'form-control', 'id'=>'password','placeholder'=>'']) !!}
+<form action="{{ route('admin.update.password', $user->id) }}" method="post" class="form-horizontal form-label-left">
+    @csrf @method('PUT')
+    <div class="item form-group @error('password') bad @enderror">
+        <label for="password" class="col-form-label col-md-3 col-sm-3 label-align">Parola nouă *</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="password" name="password" id="password" class="form-control" placeholder="New Password">
+            @if ($errors->has('password'))
+                <span class="help-block text-danger"><strong>{{ $errors->first('password') }}</strong></span>
+            @endif
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('passwordAgain','Retasteaza parola *',['class'=>'col-sm-3 control-label']) !!}
-        <div class="col-sm-4">
-            {!! Form::password('passwordAgain', ['class'=>'form-control', 'id'=>'passwordAgain','placeholder'=>'']) !!}
+    <div class="item form-group @error('passwordAgain') bad @enderror">
+        <label for="passwordAgain" class="col-form-label col-md-3 col-sm-3 label-align">Retastează parola *</label>
+        <div class="col-md-6 col-sm-6">
+            <input type="password" name="passwordAgain" id="passwordAgain" class="form-control" placeholder="Re-type Password">
+            @if ($errors->has('passwordAgain'))
+                <span class="help-block text-danger"><strong>{{ $errors->first('passwordAgain') }}</strong></span>
+            @endif
         </div>
     </div>
-    <div class="col-sm-10 col-sm-offset-3">
-        {!! Form::submit('Submit',['class' => 'btn btn-success btn-sm']) !!}
+    <div class="item form-group">
+        <div class="col-md-6 col-sm-6 offset-md-3">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
     </div>
-    {!! Form::close() !!}
+</form>
 @endsection

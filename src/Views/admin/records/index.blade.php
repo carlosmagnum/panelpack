@@ -1,46 +1,4 @@
 @extends('vendor.decoweb.admin.layouts.master')
-@section('header-assets')
-    <!-- iCheck -->
-    <link href="{{ asset('assets/admin/vendors/iCheck/skins/flat/green.css') }}" rel="stylesheet">
-    <!-- Datatables -->
-    <link href="{{ asset('assets/admin/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/admin/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/admin/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/admin/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/admin/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
-@endsection
-@section('footer-assets')
-    <!-- iCheck -->
-    <script src="{{ asset('assets/admin/vendors/iCheck/icheck.min.js') }}"></script>
-    <!-- Datatables -->
-    <script src="{{ asset('assets/admin/vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/datatables.net-scroller/js/datatables.scroller.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/jszip/dist/jszip.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/pdfmake/build/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/vendors/pdfmake/build/vfs_fonts.js') }}"></script>
-    <!-- Datatables -->
-    <script>
-        $(document).ready(function(){
-            $("#all_records").change(function(){
-                if(this.checked) {
-                    $('.records').prop('checked', true);
-                }else{
-                    $('.records').prop('checked', false);
-                }
-            });
-        });
-    </script>
-@endsection
 @section('section-title') {{ $core->name }} @endsection
 @section('section-content')
     @if($settings['config']['functionAdd'] == 1)
@@ -48,42 +6,50 @@
     @endif
 
     @if( !empty(array_filter($settings['filter'])) )
-        {!! Form::open(['method'=>'POST','url'=>'admin/core/'.$core->table_name,'class'=>'form-horizontal']) !!}
-
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Filtre</h4></div>
-            <div class="panel-body">
+        <form action="{{ route('records.index',[$core->table_name]) }}" class="form-horizontal form-label-left" method="POST" id="filters">
+            @csrf @method('POST')
+            <fieldset>
+                <legend>Filtre</legend>
         @foreach( $filters as $filter )
             @if( $filter['type'] == 'select')
-                <div class="form-group">
-                    {!! Form::label($filter['column'],$filter['name'],['class'=>'col-sm-2 control-label']) !!}
-                    <div class="col-sm-5">
-                        {!! Form::select($filter['column'],$filter['options'] ,session('filters.'.$core->table_name.'.'.$filter['column']),['class'=>'form-control','id'=>'']) !!}
+                <div class="item form-group">
+                    <label for="{{ $filter['column'] }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $filter['name'] }}</label>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="{{ $filter['column'] }}" id="{{ $filter['column'] }}" class="form-control">
+                            @foreach( $filter['options'] as $optionKey=>$optionValue)
+                                @php $selected = ( session('filters.'.$core->table_name.'.'.$filter['column']) == $optionKey )?'selected':''  @endphp
+                                <option value="{{ $optionKey }}" {{ $selected }}>{!! $optionValue !!}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-                @elseif( $filter['type'] == 'text')
-                <div class="form-group">
-                    {!! Form::label($filter['column'],$filter['name'],['class'=>'col-sm-2 control-label']) !!}
-                    <div class="col-sm-5">
-                        {!! Form::text($filter['column'], session('filters.'.$core->table_name.'.'.$filter['column']), ['class'=>'form-control', 'id'=>'','placeholder'=>'']) !!}
+            @elseif( $filter['type'] == 'text')
+                <div class="item form-group">
+                    <label for="{{ $filter['column'] }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $filter['name'] }}</label>
+                    <div class="col-md-6 col-sm-6">
+                        <input type="text" name="{{ $filter['column'] }}" id="{{ $filter['column'] }}" value="{{ session('filters.'.$core->table_name.'.'.$filter['column']) }}" class="form-control">
                     </div>
                 </div>
             @endif
         @endforeach
-            </div>
-            <div class="panel-footer">
-            <button type="submit" class="btn btn-info btn-sm"><i class="fa fa-filter"></i> Filtreaza</button>
+                <div class="col-md-6 col-sm-6 offset-md-3">
+                    <button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-filter"></i> Filtreaza</button>
                 @if( session()->has('filters.'.$core->table_name) )
-            <a href="{{ url('admin/core/'.$core->table_name.'/resetFilters') }}" class="btn btn-warning btn-sm"><i class="fa fa-close"></i> Sterge filtrele</a>
+                    <a href="{{ url('admin/core/'.$core->table_name.'/resetFilters') }}" class="btn btn-warning btn-sm"><i class="fa fa-close"></i> Sterge filtrele</a>
                 @endif
-            </div>
-        </div>
-        {!! Form::close() !!}
+                </div>
+            </fieldset>
+        </form>
     @endif
-    {{--{{ dd($settings) }}--}}
-{!! Form::open(['method'=>'POST','route'=>['records.action',$core->table_name],'class'=>'form-horizontal']) !!}
+
+<form action="{{ route('records.update.order', [$core->table_name]) }}" method="POST" id="update_order" class="form-horizontal">
+@csrf
+</form>
+
+<form action="{{ route('records.delete.many', [$core->table_name]) }}" method="POST" id="delete_records"> @csrf </form>
 <div class="table-responsive">
-    <table class="table table-hover bulk_action">
+{{--    <table class="table table-hover bulk_action">--}}
+    <table class="table table-striped jambo_table bulk_action">
         <thead>
         <tr>
             <th><input type="checkbox" id="all_records" class=""></th>
@@ -119,11 +85,14 @@
         <tbody>
             @foreach($tabela as $t)
             <tr>
-                <td><input type="checkbox" class="records" name="item[{{ $t['id'] }}]"></td>
+                <td><input type="checkbox" class="records" name="item[{{ $t['id'] }}]" form="delete_records"></td>
                 <?php $name = $settings['config']['displayedName']; ?>
                 <td>{{ html_entity_decode($t[$name]) }}</td>
                 @if($settings['config']['functionSetOrder'] == 1)
-                <td class="text-center"><input type="text" name="orderId[{{ $t['id'] }}]" class="numar" value="{{ $t['order'] }}"></td>
+                <td class="text-center">
+                    <input form="update_order" type="text" name="orderId[{{ $t['id'] }}]" class="numar" value="{{ $t['order'] }}">
+                    <input form="update_order" type="hidden" name="oldOrderId[{{ $t['id'] }}]" value="{{ $t['order'] }}">
+                </td>
                 @endif
                 @if($settings['config']['functionVisible'] == 1)
                 <td class='text-center'>@if($t['visible'] == 1) <span class='panelIcon visible'></span> @else <span class='panelIcon notVisible'></span> @endif</td>
@@ -132,16 +101,16 @@
                 <td class='text-center'><a data-toggle="tooltip" data-placement="top" href="{{ url('admin/core/'.$core->table_name.'/edit/'.$t['id']) }}" class="panelIcon editItem" title='Editeaza'></a></td>
                 @endif
                 @if($settings['config']['functionDelete'] == 1)
-                <td class='text-center'><a data-toggle="tooltip" data-placement="top" href="{{ url('admin/core/'.$core->table_name.'/recordDelete/'.$t['id']) }}" class="panelIcon deleteItem" title='Sterge' onclick="return confirm('Sunteti sigur ca doriti sa stergeti?')"></a></td>
+                <td class='text-center'><a data-toggle="tooltip" data-placement="top" href="{{ url('admin/core/'.$core->table_name.'/delete/'.$t['id']) }}" class="panelIcon deleteItem" title='Sterge' onclick="return confirm('Sunteti sigur ca doriti sa stergeti?')"></a></td>
                 @endif
                 @if($settings['config']['functionFile'] == 1)
-                    <td class='text-center'><a data-toggle="tooltip" data-placement="top" class='panelIcon pdf' href="{{ url('admin/core/'.$core->table_name.'/addFile/'.$t['id']) }}" title='Fisiere'></a></td>
+                    <td class='text-center'><a data-toggle="tooltip" data-placement="top" class='panelIcon pdf' href="{{ url('admin/core/'.$core->table_name.'/addFile/'.$t['id']) }}" title='Add Files'></a></td>
                 @endif
                 @if($settings['config']['functionImages'] == 1)
-                    <td class='text-center'><a data-toggle="tooltip" data-placement="top" class='panelIcon addImage' href="{{ url('admin/core/'.$core->table_name.'/addPic/'.$t['id']) }}" title='Imagini ({{ (isset($pics[$t['id']]))?count($pics[$t['id']]):0 }})'></a></td>
+                    <td class='text-center'><a data-toggle="tooltip" data-placement="top" class='panelIcon addImage' href="{{ url('admin/core/'.$core->table_name.'/addPic/'.$t['id']) }}" title='Add Images'></a></td>
                     <td class='text-center'>
-                        @if(isset($pics[$t['id']]) && count($pics[$t['id']]) > 0)
-                            <img src="{{ url('images/xsmall/'.array_shift($pics[$t['id']])) }}" alt="">
+                        @if( !empty($pics[$t['id']]) )
+                            <img src="{{ url('images/xsmall/'.$settings['config']['tableName'].'/'.$t['id'].'/'.$pics[$t['id']]) }}" alt="">
                         @else
                             <span class='panelIcon noImage'></span>
                         @endif
@@ -153,24 +122,38 @@
     </table>
 </div>
 
-<div class="col-sm-12">
+<div class="col-sm-12 mt-2 mb-2">
     @if($settings['config']['functionSetOrder'] == 1)
-    <button type="submit" name="changeOrder" class="btn btn-success btn-sm" value="1"><i class="fa fa-reorder"></i> Schimba ordinea</button>
+    <button type="submit" form="update_order" class="btn btn-success btn-sm" value="1"><i class="fa fa-reorder"></i> Schimba ordinea</button>
     @endif
     @if($settings['config']['functionDelete'] == 1)
-    <button type="submit" name="deleteItems" class="btn btn-danger btn-sm" value="1" onclick="return confirm('Sunteti sigur ca doriti sa stergeti?')"><i class="fa fa-trash"></i> Delete</button>
+    <button type="submit" form="delete_records" class="btn btn-danger btn-sm" value="1" onclick="return confirm('Sunteti sigur ca doriti sa stergeti?')"><i class="fa fa-trash"></i> Delete</button>
     @endif
 </div>
-{!! Form::close() !!}
+    <div class="clearfix"></div>
 
     {{ $tabela->setPath(url('/admin/core/'.$core->table_name))->render() }}
 
-    {!! Form::open(['method'=>'POST','url'=>'admin/core/limit/'.$core->id,'class'=>'form-inline pull-right']) !!}
-    <div class="input-group">
-        <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary btn-sm">Arata:</button>
-        </span>
-        {!! Form::number('perPage', $settings['config']['limitPerPage'], ['style'=>'max-width:60px;','class'=>'form-control input-sm','min'=>5]) !!}
-    </div>
-    {!! Form::close() !!}
+    <form action="{{ route('records.limit',[$core->table_name]) }}" method="POST" class="form-inline pull-right" id="records_per_page">
+        @csrf @method('POST')
+        <div class="input-group input-group-sm">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-dark btn-sm go-class" form="records_per_page">Arata:</button>
+            </span>
+            <input type="number" name="perPage" form="records_per_page" value="{{ $settings['config']['limitPerPage'] }}" min="5" class="form-control" style="max-width: 60px;">
+        </div>
+    </form>
+@endsection
+@section('footer-assets')
+    <script>
+        $(document).ready(function(){
+            $("#all_records").change(function(){
+                if(this.checked) {
+                    $('.records').prop('checked', true);
+                }else{
+                    $('.records').prop('checked', false);
+                }
+            });
+        });
+    </script>
 @endsection

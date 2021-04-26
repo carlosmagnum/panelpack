@@ -1,9 +1,9 @@
 @extends('vendor.decoweb.admin.layouts.master')
 @section('section-title') AJUTOR @endsection
-@section('section-help')
+@section('section-content')
 <div class="row">
 	<div class="col-md-10 col-md-offset-1">
-		
+
 <style type="text/css">
 	span.ajutor>*{font-size: 18px}
 	.pt-30 {padding-top: 30px;}
@@ -34,7 +34,7 @@
 		<li><a href="{{url('admin/help#inregistrari')}}">Înregistrări - opţiuni</a>
 			<ul>
 				<li><a href="{{url('admin/help#reg_edit')}}">Editare</a></li>
-				<li><a href="{{url('admin/help#reg_del')}}">Ştergere</a></li>
+				<li><a href="{{url('admin/help#reg_del')}}">Ștergere</a></li>
 				<li><a href="{{url('admin/help#reg_img')}}">Adăugare imagini</a></li>
 				<li><a href="{{url('admin/help#reg_file')}}">Adăugare fişiere</a></li>
 			</ul>
@@ -43,7 +43,7 @@
 	</ul>
 	<h2 class="pt-30">SETARI</h2>
     <ol>
-    	<li><a href="{{url('admin/help#map')}}">Google Map</a></li>
+    	<li><a href="{{url('admin/help#map')}}">Hartă</a></li>
     	<li><a href="{{url('admin/help#generale')}}">Setări generale</a></li>
     	<li><a href="{{url('admin/help#sociale')}}">Reţele sociale</a></li>
     	<li><a href="{{url('admin/help#sitemap')}}">Sitemap</a></li>
@@ -51,10 +51,10 @@
     <hr class="m-60">
     <div id="tipuri">
     	<h3 class="text-success">Tipuri de pagini</h3>
-    	<p>Diferitele secţiuni (sau pagini) ale site-ului se află în meniul principal (stânga ecranului), sub titlul <em>PAGINI</em>.</p>
+    	<p>Diferitele secțiuni (sau pagini) ale site-ului se află în meniul principal (stânga ecranului), sub titlul <em>PAGINI</em>.</p>
     	<p>Există două tipuri de pagini:</p>
     	<ul>
-    		<li id="statice"><strong>Statice</strong> - care conţin o singură înregistrare (ex. <em>Contact</em>, <em>Despre noi</em> etc.). Acestor tipuri de pagini nu li se pot adăuga alte înregistrări.</li>
+    		<li id="statice"><strong>Statice</strong> - care conțin o singură înregistrare (ex. <em>Contact</em>, <em>Despre noi</em> etc.). Acestor tipuri de pagini nu li se pot adăuga alte înregistrări.</li>
     		<li id="dinamice"><strong>Dinamice</strong> - cărora li se pot adăuga mai multe înregistrări (ex. <em>Produse</em>, <em>Articole</em>, <em>Noutati</em> etc.)</li>
     	</ul>
     </div>
@@ -81,7 +81,7 @@
     		</tr>
     		<tr id="btn_del">
     			<td class="text-left"><button type="button" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button></td>
-    			<td>Ştergere înregistrări multiple. Apăsaţi acest buton după ce aţi selectat mai multe înregistrări afişate, sau pe toate (selecţia se face bifand căsuţele din prima coloană).</td>
+    			<td>Ștergere înregistrări multiple. Apăsați acest buton după ce aţi selectat mai multe înregistrări afișate, sau pe toate (selecția se face bifând căsuţele din prima coloană).</td>
     		</tr>
     		<tr id="btn_nr">
     			<td>
@@ -100,7 +100,7 @@
     <div id="inregistrari">
     	<h3 class="text-success">Înregistrări</h3>
     	<p>Fiecare înregistrare listată, în funcţie de specificul paginii căreia îi aparţine, poate prezenta următoarele opţiuni:</p>
-    	
+
     	<table class="table">
     		<thead>
     			<tr>
@@ -220,7 +220,7 @@
     							<li>Faceţi <a href="#setari_facultative">setările facultative</a> şi salvaţi.</li>
     						</ol>
     					</li>
-    					
+
     				</ol>
     			</td></tr>
     			<tr><td><span class="ckedit ckedit-table"></span></td><td><u>Tabel</u></td><td>
@@ -257,7 +257,7 @@
     </div>
     <hr>
     <div id="map">
-    	<h3 class="text-success">Google Map</h3>
+    	<h3 class="text-success">Hartă</h3>
     	<p>Pagina este dedicată identificării firmei dumneavoastră pe hartă.</p>
     	<p>Pentru aceasta, respectaţi paşii următori:</p>
     	<ol>

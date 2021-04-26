@@ -53,11 +53,11 @@
             @endforeach
             </tbody>
         </table>
-        <button type="submit" class="btn btn-default">Modifica</button>
-        <a class="btn btn-default" href="{{ $url }}">Finalizeaza comanda</a>
-        <a class="btn btn-default" href="{{ url('cart/destroy') }}">Goleste cosul</a>
+        <button type="submit" class="btn btn-default">Modifică</button>
+        <a class="btn btn-default" href="{{ $url }}">Finalizează comanda</a>
+        <a class="btn btn-default" href="{{ url('cart/destroy') }}">Golește coșul</a>
             {!! Form::close() !!}
     @else
-        <p>Cosul de cumparaturi este gol.</p>
+        <p>Coșul de cumpărături este gol.</p>
     @endif
 @endsection

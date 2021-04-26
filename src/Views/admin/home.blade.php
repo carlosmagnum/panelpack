@@ -1,5 +1,5 @@
 @extends('vendor.decoweb.admin.layouts.master')
-@section('section-title') Bine ati venit! @endsection
+@section('section-title') Bine ați venit! @endsection
 @section('section-content')
-    Va rugam sa selectati una dintre optiunile din meniul din stanga.
+    Vă rugăm să selectați una dintre opțiunile din meniul din stânga.
 @endsection

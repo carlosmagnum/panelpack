@@ -1,77 +1,100 @@
 @extends('vendor.decoweb.admin.layouts.master')
 @section('section-title') {{ $table->name }} @endsection
 @section('section-content')
+<form action="{{ route('record.store',[$table->id]) }}" method="POST" class="form-horizontal form-label-left">
+@csrf
+<fieldset>
+<legend>{{ $settings['messages']['add'] }}</legend>
+@foreach($settings['elements'] as $name=>$field)
+<?php $required = ( $field['required'] == '')?'':"*"; ?>
 
-    {!! Form::open(['method'=>'POST','route'=>['store.record',$table->id],'class'=>'form-horizontal']) !!}
-
-    <fieldset>
-        <legend>{{ $settings['messages']['add'] }}</legend>
-        @foreach($settings['elements'] as $name=>$field)
-            <?php
-            $required = ( $field['required'] == '')?'':"*";
-            $id = $name;
-            $type = $field['type'];
-            $default = null;
-            if($field['type'] == 'editor'){
-                if(!defined('EDITOR')){
-                    define('EDITOR',true);
-                }
-                $type = 'textarea';
-                $id = "my-editor";
-            }
-
-            if($field['type'] == 'checkbox'){
-                $colType = explode('|',$field['colType']);
-                $value = ($colType[0] == 'enum')?'da':1;
-
-            }
-            ?>
-
-            @if($field['type'] == 'checkbox')
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <div class="checkbox">
-                            <label>
-                                {!!  Form::checkbox($name, null, false).' '.$field['friendlyName'].' '.$required  !!}
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            @elseif($field['type'] == 'select')
-                <div class="form-group">
-                    {!! Form::label('',$field['friendlyName'].' '.$required,['class'=>'col-sm-2 control-label']) !!}
-                    <div class="col-sm-5">
-                        {!! Form::select($name,$field['options'] ,null,['class'=>'form-control']) !!}
-                    </div>
-                </div>
-            @else
-                <div class="form-group">
-                    {!! Form::label($id, $field['friendlyName'].' '.$required,['class'=>'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {{ Form::$type($name, $default, ['class'=>'form-control', 'id'=>"$id",'placeholder'=>'']) }}
-                    </div>
-                </div>
-            @endif
-        @endforeach
-        @if($settings['config']['functionVisible'] == 1)
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
+    @switch($field['type'])
+        @case('checkbox')
+            <div class="item form-group">
+                <label class="col-form-label col-md-3 col-sm-3 label-align"></label>
+                <div class="col-md-6 col-sm-6">
                     <div class="checkbox">
                         <label>
-
-                            {!!  Form::checkbox('visible', null, true).' '.'Vizibil' !!}
+                            <input type="checkbox" name="{{ $name }}"> {{ $field['friendlyName'] }}
                         </label>
                     </div>
                 </div>
             </div>
-        @endif
-        <div class="col-sm-10 col-sm-offset-2">
-            {!! Form::submit('Salveaza',['class' => 'btn btn-success btn-sm']) !!}
-            <a class="btn btn-default btn-sm" href="{{ url('admin/core/'.$table->table_name) }}">Renunta</a>
+            @break
+        @case('select')
+            <div class="item form-group">
+                <label for="{{ $name }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+                <div class="col-md-6 col-sm-6">
+                    <select name="{{ $name }}" id="{{ $name }}" class="form-control">
+                        @foreach($field['options'] as $optionId => $option)
+                            <option value="{{ $optionId }}">{!! $option !!}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            @break
+        @case('editor')
+            <?php if( !defined('EDITOR') ) define('EDITOR',true) ?>
+            <div class="item form-group">
+                <label for="my-editor" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+                <div class="col-md-6 col-sm-6">
+                    <textarea name="{{ $name }}" id="my-editor" class="form-control"></textarea>
+                </div>
+            </div>
+            @break
+        @case('textarea')
+            <div class="item form-group">
+                <label for="{{ $name }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+                <div class="col-md-6 col-sm-6">
+                    <textarea name="{{ $name }}" id="{{ $name }}" class="form-control"></textarea>
+                </div>
+            </div>
+            @break
+        @default
+            <div class="item form-group">
+                <label for="{{ $name }}" class="col-form-label col-md-3 col-sm-3 label-align">{{ $field['friendlyName'].' '.$required }}</label>
+                <div class="col-md-6 col-sm-6">
+                    <input type="text" name="{{ $name }}" class="form-control" id="{{ $name }}">
+                </div>
+            </div>
+    @endswitch
+
+@endforeach
+
+@if($settings['config']['functionVisible'] == 1)
+<div class="item form-group">
+    <label class="col-form-label col-md-3 col-sm-3 label-align"></label>
+    <div class="col-md-6 col-sm-6">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="visible" checked="checked"> Vizibil
+            </label>
         </div>
-    </fieldset>
-
-    {!! Form::close() !!}
-
-
+    </div>
+</div>
+@endif
+<div class="ln_solid"></div>
+<div class="item form-group">
+    <div class="col-md-6 col-sm-6 offset-md-3">
+        <input type="submit" class="btn btn-primary" value="Salveaza">
+        <a class="btn btn-secondary" href="{{ url('admin/core/'.$table->table_name) }}">Renunta</a>
+    </div>
+</div>
+</fieldset>
+    <div class="form-group">
+        <div class='input-group date datePicker'>
+            <input type="text" class="form-control ">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+            </span>
+        </div>
+    </div>
+</form>
+@endsection
+@section('footer-assets')
+    <script>
+        $('.datePicker').datetimepicker({
+            format: 'DD.MM.YYYY'
+        });
+    </script>
 @endsection
