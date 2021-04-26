@@ -32,7 +32,7 @@
                 "Decoweb\\Panelpack\\Providers\\PicturesServiceProvider",
                 "Decoweb\\Panelpack\\Providers\\ComposerServiceProvider",
                 "Laravel\\Socialite\\SocialiteServiceProvider",
-                "Spatie\\ResponseCache\\ResponseCacheServiceProvider"
+                "Spatie\\ResponseCache\\ResponseCacheServiceProvider",
                 "Watson\\Sitemap\\SitemapServiceProvider"
                 
             ],
